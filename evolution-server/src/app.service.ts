@@ -6,19 +6,18 @@ import { join } from 'path';
 @Injectable()
 export class AppService {
   private map: Map;
+  private SAVE_DIRECTORY = process.env['SAVE_DIRECTORY'];
 
   seed(): string {
     this.map = new Map(3, 1000);
     const game = JSON.stringify(this.map);
-    const filename = './game_snapshot.json';
+    const filepath = join(this.SAVE_DIRECTORY, 'game_snapshot.json');
     /**
      * flags:
      *  - w = Open file for reading and writing. File is created if not exists
      *  - a+ = Open file for reading and appending. The file is created if not exists
      */
-    writeFileSync(join(__dirname, filename), game, {
-      flag: 'w',
-    });
+    writeFileSync(filepath, game, { flag: 'w' });
     return game;
   }
 
