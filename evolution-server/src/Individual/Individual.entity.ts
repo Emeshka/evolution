@@ -4,11 +4,13 @@ import {
   OutputProperty,
   Phenotype,
 } from 'src/OutputProperty/OutputProperty.types';
-import { ActionSign } from 'src/Signs.enum';
+import { Requirement } from 'src/Requirement/Requirement.entity';
+import { ActionSign, ComparativeSign } from 'src/Signs.enum';
 
 export class Individual {
   genotype: Allel[];
   phenotype: Phenotype;
+  consumption: number;
 
   constructor(initialGenePool?: GenePool) {
     this.genotype = [];
@@ -23,6 +25,7 @@ export class Individual {
 
   execute() {
     const phenotype = {};
+    this.consumption = 0;
     for (const name of Object.keys(OutputProperty)) {
       phenotype[name] = OutputProperty[name].minValue;
     }
@@ -47,8 +50,22 @@ export class Individual {
           phenotype[object.name] = object.maxValue;
         }
       }
+      this.consumption += allel.cost;
     }
     this.phenotype = phenotype;
+  }
+
+  isAdapted(requirements: Requirement[]) {
+    let isAdapted = true;
+    for (const requirement of requirements) {
+      const actualValue = this.phenotype[requirement.outputProperty.name];
+      if (requirement.sign === ComparativeSign.G) {
+        isAdapted = isAdapted && actualValue > requirement.threshold;
+      } else if (requirement.sign === ComparativeSign.L) {
+        isAdapted = isAdapted && actualValue < requirement.threshold;
+      }
+    }
+    return isAdapted;
   }
 
   toString() {

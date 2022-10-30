@@ -7,19 +7,25 @@ import { Supply } from 'src/Supply/Supply.entity';
 export class MapCell {
   i: number;
   j: number;
-  basicSupply: number;
+  basicSupply: Supply;
   advancedSupplies: Supply[];
   population: Population;
 
-  constructor(i, j, basicSupply, initialGenePool) {
+  constructor(i, j, basicSupplyValue, initialGenePool) {
     this.i = i;
     this.j = j;
-    this.basicSupply = basicSupply;
+    this.basicSupply = {
+      name: 'basicSupply',
+      value: basicSupplyValue,
+      capacity: basicSupplyValue,
+      requirements: [],
+    };
 
     this.advancedSupplies = [];
     this.advancedSupplies[0] = {
       name: 'Advanced supply 1',
       value: 5000,
+      capacity: 5000,
       requirements: [
         new Requirement(50, OutputProperty.width, ComparativeSign.G),
       ],
@@ -30,5 +36,16 @@ export class MapCell {
     } else {
       this.population = new Population();
     }
+  }
+
+  restoreSupplies() {
+    this.basicSupply.restore();
+    for (const supply of this.advancedSupplies) {
+      supply.restore();
+    }
+  }
+
+  feedLiving() {
+    this.population.consume(this.basicSupply, this.advancedSupplies);
   }
 }

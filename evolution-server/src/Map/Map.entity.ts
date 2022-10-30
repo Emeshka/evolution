@@ -6,9 +6,11 @@ import { ActionSign } from 'src/Signs.enum';
 
 export class Map {
   cells: MapCell[][];
+  size: number;
   genePool: GenePool;
 
   constructor(size, basicSupply) {
+    this.size = size;
     this.genePool = [];
     Allel.genePool = this.genePool;
     const outputProperties = Object.entries(OutputProperty);

@@ -1,13 +1,23 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Put } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  start() {
-    return this.appService.start();
+  @Put('start-simulation')
+  startSimulation() {
+    return this.appService.startSimulation();
+  }
+
+  @Put('resume-simulation')
+  resumeSimulation() {
+    return this.appService.resumeSimulation();
+  }
+
+  @Put('stop-simulation')
+  stopSimulation() {
+    return this.appService.stopSimulation();
   }
 
   @Get('/seed')
