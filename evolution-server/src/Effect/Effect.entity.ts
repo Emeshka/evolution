@@ -23,11 +23,7 @@ export class Effect {
   }
 
   toString() {
-    return JSON.stringify({
-      object: this.object.name,
-      action: this.action,
-      value: this.value,
-    });
+    return JSON.stringify(this.toJSON());
   }
 
   toJSON() {

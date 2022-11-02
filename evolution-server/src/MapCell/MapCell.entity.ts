@@ -14,22 +14,12 @@ export class MapCell {
   constructor(i, j, basicSupplyValue, initialGenePool) {
     this.i = i;
     this.j = j;
-    this.basicSupply = {
-      name: 'basicSupply',
-      value: basicSupplyValue,
-      capacity: basicSupplyValue,
-      requirements: [],
-    };
+    this.basicSupply = new Supply('basicSupply', basicSupplyValue, []);
 
     this.advancedSupplies = [];
-    this.advancedSupplies[0] = {
-      name: 'Advanced supply 1',
-      value: 5000,
-      capacity: 5000,
-      requirements: [
-        new Requirement(50, OutputProperty.width, ComparativeSign.G),
-      ],
-    };
+    this.advancedSupplies[0] = new Supply('Advanced supply 1', 5000, [
+      new Requirement(50, OutputProperty.width, ComparativeSign.G),
+    ]);
 
     if (i == 1 && j == 1) {
       this.population = new Population(initialGenePool, 5);
@@ -46,6 +36,17 @@ export class MapCell {
   }
 
   feedLiving() {
-    this.population.consume(this.basicSupply, this.advancedSupplies);
+    this.population.feed(this.basicSupply, this.advancedSupplies);
+  }
+
+  spawn() {
+    /*TODO: spawn each organism depending on its phenotype.sex:
+
+    https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%B7%D0%B4%D0%B5%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BF%D0%BE%D0%BB%D0%BE%D0%B2_%D1%83_%D1%80%D0%B0%D1%81%D1%82%D0%B5%D0%BD%D0%B8%D0%B9
+    
+    0 - can spawn only asexually (hydra, cyanobacteria)
+    1 - can spawn asexually or sexually ()
+    2 - can spawn only sexually (cats, birds)
+    */
   }
 }

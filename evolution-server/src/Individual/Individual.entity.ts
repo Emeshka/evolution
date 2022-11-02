@@ -6,6 +6,7 @@ import {
 } from 'src/OutputProperty/OutputProperty.types';
 import { Requirement } from 'src/Requirement/Requirement.entity';
 import { ActionSign, ComparativeSign } from 'src/Signs.enum';
+import { Supply } from 'src/Supply/Supply.entity';
 
 export class Individual {
   genotype: Allel[];
@@ -14,16 +15,19 @@ export class Individual {
 
   constructor(initialGenePool?: GenePool) {
     this.genotype = [];
-    const geneOrder = Object.keys(initialGenePool).sort();
+    const geneOrder = Object.keys(initialGenePool)
+      .map((stringKey) => Number(stringKey))
+      .sort();
     for (const order of geneOrder) {
       const variants = initialGenePool[order];
       const randomVariant =
         variants[Math.floor(Math.random() * variants.length)];
       this.genotype.push(randomVariant.allel);
+      randomVariant.allel.updateQuantity(1);
     }
   }
 
-  execute() {
+  makePhenotype() {
     const phenotype = {};
     this.consumption = 0;
     for (const name of Object.keys(OutputProperty)) {
@@ -68,16 +72,33 @@ export class Individual {
     return isAdapted;
   }
 
+  feed(basicSupply: Supply, advancedSupplies: Supply[]) {
+    // An organism will prioritize advanced supplies if it can reach any
+
+    // TODO: take in account that one organism can feed on multiple supplies at one step
+
+    // TODO: if feed returns false (there wasn't enough food), it returns
+    // all of actually consumed energy to basic supply, no matter where it has taken it
+    for (const supply of advancedSupplies) {
+      const isAdapted = this.isAdapted(supply.requirements);
+      if (isAdapted && supply.value - this.consumption >= 0) {
+        supply.value -= this.consumption;
+        return true;
+      }
+    }
+
+    // If no advanced supply is accessible, it will take energy from basicSupply
+    if (basicSupply.value - this.consumption >= 0) {
+      basicSupply.value -= this.consumption;
+      return true;
+    } else {
+      // If basic supply ran out, organism dies with no heirs
+      return false;
+    }
+  }
+
   toString() {
-    return JSON.stringify({
-      genotype: this.genotype.map((allel) => {
-        return {
-          order: allel.order,
-          variantId: allel.variantId,
-        };
-      }),
-      phenotype: this.phenotype,
-    });
+    return JSON.stringify(this.toJSON());
   }
 
   toJSON() {

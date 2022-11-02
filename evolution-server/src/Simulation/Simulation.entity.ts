@@ -14,7 +14,8 @@ export class Simulation {
       for (let j = 0; j < this.map.size; j++) {
         const cell: MapCell = this.map[i][j];
         cell.restoreSupplies();
-        const consumedByLiving = cell.feedLiving();
+        cell.feedLiving();
+        cell.spawn();
       }
     }
   }
@@ -26,6 +27,7 @@ export class Simulation {
       }
       this.updateModel();
       this.generationNumber++;
+      // TODO: vary interval depending on user input
       this.step(this.STEP_INTERVAL);
     }, delay);
   }

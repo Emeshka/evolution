@@ -46,9 +46,9 @@ export class Allel {
     newVariants.push(entry);
   }
 
-  updateQuantity(delta, allel) {
-    const entry = Allel.genePool[allel.order].find(
-      (entry) => entry.allel == allel,
+  updateQuantity(delta) {
+    const entry = Allel.genePool[this.order].find(
+      (entry) => entry.allel == this,
     );
     entry.quantity += delta;
   }

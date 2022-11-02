@@ -9,4 +9,11 @@ export class Supply {
   restore() {
     this.value = this.capacity;
   }
+
+  constructor(name: string, capacity: number, requirements: Requirement[]) {
+    this.name = name;
+    this.capacity = capacity;
+    this.value = capacity;
+    this.requirements = requirements;
+  }
 }

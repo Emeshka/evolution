@@ -10,36 +10,20 @@ export class Population {
       for (let i = 0; i < individualCount; i++) {
         const individual = new Individual(initialGenePool);
         this.individuals.push(individual);
-        individual.execute();
+        individual.makePhenotype();
       }
     }
   }
 
-  consume(basicSupply: Supply, supplies: Supply[]) {
+  feed(basicSupply: Supply, advancedSupplies: Supply[]) {
     const individualIndexesToRemove = [];
     for (let i = 0; i < this.individuals.length; i++) {
       const individual = this.individuals[i];
-      let isIndividualFed = false;
-      // An organism will prioritize advanced supplies if it can reach any
-      // TODO: take in account that one organism can feed on multiple supplies at one step
-      for (const supply of supplies) {
-        if (isIndividualFed) break;
-        const isAdapted = individual.isAdapted(supply.requirements);
-        if (isAdapted && supply.value - individual.consumption >= 0) {
-          supply.value -= individual.consumption;
-          isIndividualFed = true;
-        }
-      }
-
-      // If no advanced supply is accessible, it will take energy from basicSupply
-      if (!isIndividualFed) {
-        if (basicSupply.value - individual.consumption >= 0) {
-          basicSupply.value -= individual.consumption;
-          isIndividualFed = true;
-        } else {
-          // If basic supply ran out, organism dies with no heirs
-          individualIndexesToRemove.push(i);
-        }
+      const isFed = individual.feed(basicSupply, advancedSupplies);
+      if (!isFed) {
+        // TODO: if feed returns false (there wasn't enough food), it returns
+        // all of actually consumed energy to basic supply, no matter where it has taken it
+        individualIndexesToRemove.push(i);
       }
     }
 
